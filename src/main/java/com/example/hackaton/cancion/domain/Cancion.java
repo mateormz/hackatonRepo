@@ -33,4 +33,20 @@ public class Cancion {
 
     @ManyToOne
     private User user;
+
+    public int getDuracion() {
+        return duracion;
+    }
+
+    public List<Artista> getArtista() {
+        return artista;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public Album getAlbum() {
+        return album;
+    }
 }

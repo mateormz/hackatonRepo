@@ -20,7 +20,9 @@ public class ListaCreadaListener {
     @EventListener
     @Async
     public void handleListaReproduccionCreated(ListaCreadaEvent event){
-        ListaDeReproduccion listaDeReproduccion = listaDeReproduccionRepository.findById(event.getListaDeReproduccion().getIdPlaylist()).orElse(null);
+        ListaDeReproduccion listaDeReproduccion = listaDeReproduccionRepository.findById(event.getListaDeReproduccion().getListaReproduccionId()).orElse(null);
         String message = "LISTA DE REPRODUCCION CREADA " + listaDeReproduccion.getNombre();
+        emailService.sendEmail(event.getEmail(), "lista de reproduccion creada", message);
+
     }
 }

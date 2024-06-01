@@ -1,8 +1,20 @@
 package com.example.hackaton.listaDeReproduccion.domain;
 
+import com.example.hackaton.cancion.domain.Cancion;
+import com.example.hackaton.cancion.domain.CancionDto;
+import com.example.hackaton.cancion.infrastructure.CancionRepository;
+import com.example.hackaton.eventos.ListaCreadaEvent;
+import com.example.hackaton.user.domain.User;
+import com.example.hackaton.user.infrastructure.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import com.example.hackaton.listaDeReproduccion.infrastructure.ListaDeReproduccionRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -11,12 +23,109 @@ public class ListaDeReproduccionService {
     @Autowired
     private ListaDeReproduccionRepository listaDeReproduccionRepository;
 
+    @Autowired
+    private UserRepository<User> userRepository;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
+    private CancionRepository cancionRepository;
+
+    @Autowired
+    private ModelMapper mapper;
+
+
+    public ListaDeReproduccionService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+
     //crear
+    public ListaDeReproduccion createListaDeReproduccion(Long userId, ListaDeReproduccion listaDeReproduccion) throws Throwable {
+        ListaDeReproduccion newLista = new ListaDeReproduccion();
+        newLista.setNombre(listaDeReproduccion.getNombre());
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Playlist not"));
+        newLista.setUser(user);
+        newLista.setFecha(LocalDateTime.now());
+
+        applicationEventPublisher.publishEvent(new ListaCreadaEvent(this, user.getEmail(), newLista));
+
+        return newLista;
+    }
+
+    public ListaDeReproduccion updateListaReproduccion(ListaDeReproduccionDto listaDeReproduccionDto){
+        ListaDeReproduccion listaDeReproduccion = listaDeReproduccionRepository.findById(listaDeReproduccionDto.getIdPlaylist()).orElseThrow(() -> new RuntimeException("Playlist not found"));
+        listaDeReproduccion.setNombre(listaDeReproduccionDto.getNombre());
+        listaDeReproduccionRepository.save(listaDeReproduccion);
+        return listaDeReproduccion;
+    }
 
 
+    //modificar añadir cancion
+    public void añadirCancion(Long listaReproduccionId , Long Songid){
+        ListaDeReproduccion listaDeReproduccion = listaDeReproduccionRepository.findById(listaReproduccionId).orElseThrow(() -> new RuntimeException("Playlist not found"));
+        Cancion cancion = cancionRepository.findById(Songid).orElseThrow(() -> new RuntimeException("Cancion not found"));
+        listaDeReproduccion.getCancionList().add(cancion);
+    }
 
-    //modificar
+    //modificar eliminar cancion
+    public void eliminarCancion(Long listaReproduccionId , Long Songid){
+        ListaDeReproduccion listaDeReproduccion = listaDeReproduccionRepository.findById(listaReproduccionId).orElseThrow(() -> new RuntimeException("Playlist not found"));
+        Cancion cancion = cancionRepository.findById(Songid).orElseThrow(() -> new RuntimeException("Cancion not found"));
+        listaDeReproduccion.getCancionList().remove(cancion);
+    }
 
-    //eliminar lista de reproduccion
+    
+    //modificar eliminar playlist
+    public void eliminarListaDeReproducion(Long listaReproduccionId){
+        ListaDeReproduccion eliminar = listaDeReproduccionRepository.findById(listaReproduccionId).orElseThrow(() -> new RuntimeException("Playlist not found"));;
+        listaDeReproduccionRepository.delete(eliminar);
+    }
+
+    //buscarCancionDeLaPlaylist
+
+    public CancionDto findCancionfromPlaylist(Long listaReproduccionId, Long Songid) {
+        ListaDeReproduccion listaDeReproduccion = listaDeReproduccionRepository.findById(listaReproduccionId)
+                .orElseThrow(() -> new RuntimeException("Lista de reproducción no encontrada"));
+
+        Cancion cancion = listaDeReproduccion.getCancionList().stream()
+                .filter(c -> c.getIdSong() == Songid)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Canción no encontrada en la lista de reproducción"));
+
+        return convertToDto(cancion);
+    }
+
+    private CancionDto convertToDto(Cancion cancion) {
+        return mapper.map(cancion, CancionDto.class);
+    }
+
+    public List<ListaDeReproduccionDto> getAllListasDeReproduccionByUserId(Long userId) {
+        List<ListaDeReproduccion> listasDeReproduccion = listaDeReproduccionRepository.findAllByUserId(userId);
+        return listasDeReproduccion.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private ListaDeReproduccionDto convertToDto(ListaDeReproduccion listaDeReproduccion) {
+        ListaDeReproduccionDto listaDeReproduccionDto = mapper.map(listaDeReproduccion, ListaDeReproduccionDto.class);
+        // Mapea las canciones a DTO si lo necesitas
+        List<CancionDto> cancionDtoList = listaDeReproduccion.getCancionList().stream()
+                .map(cancion -> mapper.map(cancion, CancionDto.class))
+                .collect(Collectors.toList());
+        listaDeReproduccionDto.setCancionList(cancionDtoList);
+        return listaDeReproduccionDto;
+    }
+
+    public List<CancionDto> getAllCanciones(Long playlistId) {
+        ListaDeReproduccion listaDeReproduccion = listaDeReproduccionRepository.findById(playlistId)
+                .orElseThrow(() -> new RuntimeException("Lista de reproducción no encontrada"));
+
+        return listaDeReproduccion.getCancionList().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
 
 }

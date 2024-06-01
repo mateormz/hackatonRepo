@@ -1,6 +1,5 @@
 package com.example.hackaton.album.domain;
 
-
 import com.example.hackaton.cancion.domain.Cancion;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

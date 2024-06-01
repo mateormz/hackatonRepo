@@ -8,7 +8,11 @@ import java.time.ZonedDateTime;
 public class AuthJwtResponse {
     public String token;
     public Long id;
+<<<<<<< HEAD
+
+=======
     public String name;
     public String email;
     public ZonedDateTime fechaDeRegistro;
+>>>>>>> mateoAcabado
 }
