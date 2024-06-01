@@ -13,6 +13,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +33,7 @@ public class ListaDeReproduccionController {
 
     // Crear una nueva lista de reproducción
     @PostMapping("/users/{user_id}/playlists")
-    public ResponseEntity<ListaDeReproduccion> createPlaylist(@PathVariable int user_id , @RequestBody ListaDeReproduccion listaDeReproduccion) {
+    public ResponseEntity<ListaDeReproduccion> createPlaylist(@PathVariable Long user_id , @RequestBody ListaDeReproduccion listaDeReproduccion) throws Throwable {
         ListaDeReproduccion createdPlaylist = listaDeReproduccionService.createListaDeReproduccion(user_id,listaDeReproduccion);
         return ResponseEntity.ok(createdPlaylist);
     }
@@ -71,9 +79,13 @@ public class ListaDeReproduccionController {
     }
 
     // Buscar una canción en una lista de reproducción
-    @GetMapping("/{playlistId}/songs/{songId}")
-    public ResponseEntity<CancionDto> findSongInPlaylist(@PathVariable int playlistId, @PathVariable int songId) {
-        CancionDto song = listaDeReproduccionService.findCancionfromPlaylist(playlistId, songId);
+    @GetMapping("/{listaReproduccionId}/songs/{songId}")
+    public ResponseEntity<CancionDto> findSongInPlaylist(@PathVariable Long listaReproduccionId, @PathVariable Long songId) {
+        CancionDto song = listaDeReproduccionService.findCancionfromPlaylist(listaReproduccionId, songId);
         return ResponseEntity.ok(song);
+    }
+    @GetMapping("/user/{userId}/playlists")
+    public List<ListaDeReproduccionDto> getAllListasDeReproduccionByUserId(@PathVariable Long userId) {
+        return listaDeReproduccionService.getAllListasDeReproduccionByUserId(userId);
     }
 }

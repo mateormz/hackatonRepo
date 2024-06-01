@@ -18,7 +18,7 @@ public class Cancion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int idSong;
+    private Long idSong;
 
     private String titulo;
 
@@ -33,4 +33,20 @@ public class Cancion {
 
     @ManyToOne
     private User user;
+
+    public int getDuracion() {
+        return duracion;
+    }
+
+    public List<Artista> getArtista() {
+        return artista;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public Album getAlbum() {
+        return album;
+    }
 }
