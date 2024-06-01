@@ -5,6 +5,7 @@ import com.example.hackaton.listaDeReproduccion.domain.ListaDeReproduccion;
 import com.example.hackaton.listaDeReproduccion.infrastructure.ListaDeReproduccionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component

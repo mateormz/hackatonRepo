@@ -35,7 +35,6 @@ public class AuthService {
         this.modelMapper = modelMapper;
     }
 
-    /*
     public AuthJwtResponse login(AuthLoginRequest req) {
         Optional<User> user = baseUserRepository.findByEmail(req.getUsername());
 
@@ -48,56 +47,32 @@ public class AuthService {
 
         response.setToken(jwtService.generateToken(user.get()));
         response.setId(user.get().getId());
-        response.setRole(user.get().getRole());
+        response.setName(user.get().getName());
+        response.setEmail(user.get().getEmail());
+        response.setFechaDeRegistro(user.get().getFechaDeRegistro());
         return response;
     }
 
-     */
-
-    /*
-    public AuthJwtResponse register(AuthRegisterRequest req){
-        Optional<User> user = baseUserRepository.findByEmail(req.getEmail());
-        if (user.isPresent()) throw new IllegalArgumentException("Email is already registered");
-
-        if (req.getIsOwner()) {
-            Owner owner = new Owner();
-            owner.setCreatedAt(ZonedDateTime.now());
-            owner.setRole(Role.OWNER);
-            owner.setFirstName(req.getFirstName());
-            owner.setLastName(req.getLastName());
-            owner.setEmail(req.getEmail());
-            owner.setPassword(passwordEncoder.encode(req.getPassword()));
-            owner.setPhoneNumber(req.getPhoneNumber());
-
-            baseUserRepository.save(owner);
-
-            AuthJwtResponse response = new AuthJwtResponse();
-            response.setToken(jwtService.generateToken(owner));
-            response.setId(owner.getId());
-            response.setRole(owner.getRole());
-            applicationEventPublisher.publishEvent(new WelcomeEmailEvent(this, owner.getEmail(), owner.getFirstName()));
-            return response;
-        }
-        else {
-            Employee employee = new Employee();
-            employee.setCreatedAt(ZonedDateTime.now());
-            employee.setRole(Role.EMPLOYEE);
-            employee.setFirstName(req.getFirstName());
-            employee.setLastName(req.getLastName());
-            employee.setEmail(req.getEmail());
-            employee.setPassword(passwordEncoder.encode(req.getPassword()));
-            employee.setPhoneNumber(req.getPhoneNumber());
-
-            baseUserRepository.save(employee);
-
-            AuthJwtResponse response = new AuthJwtResponse();
-            response.setToken(jwtService.generateToken(employee));
-            response.setId(employee.getId());
-            response.setRole(employee.getRole());
-            applicationEventPublisher.publishEvent(new WelcomeEmailEvent(this, employee.getEmail(), employee.getFirstName()));
-            return response;
+    public AuthJwtResponse register(AuthRegisterRequest req) {
+        Optional<User> existingUser = baseUserRepository.findByEmail(req.getEmail());
+        if (existingUser.isPresent()) {
+            throw new IllegalArgumentException("Email is already registered");
         }
 
+        User user = new User();
+        user.setFechaDeRegistro(ZonedDateTime.now());
+        user.setName(req.getName());
+        user.setEmail(req.getEmail());
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
+
+        baseUserRepository.save(user);
+
+        AuthJwtResponse response = new AuthJwtResponse();
+        response.setToken(jwtService.generateToken(user));
+        response.setId(user.getId());
+        response.setName(user.getName());
+        response.setEmail(user.getEmail());
+        response.setFechaDeRegistro(user.getFechaDeRegistro());
+        return response;
     }
-    */
 }

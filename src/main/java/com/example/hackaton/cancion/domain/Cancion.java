@@ -22,10 +22,10 @@ public class Cancion {
 
     private String titulo;
 
-    @ManyToMany(mappedBy = "artistaID")
+    @ManyToMany
     List<Artista> artista;
 
-    @JoinColumn(name = "idAlbum")
+    @JoinColumn
     @OneToOne(cascade = CascadeType.ALL)
     private Album album;
 

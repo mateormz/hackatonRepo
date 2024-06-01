@@ -2,12 +2,11 @@ package com.example.hackaton.auth.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class AuthRegisterRequest {
-    String firstName;
-    String lastName;
+    String name;
     String email;
     String password;
-    Boolean isOwner = false;
-    String phoneNumber;
 }
