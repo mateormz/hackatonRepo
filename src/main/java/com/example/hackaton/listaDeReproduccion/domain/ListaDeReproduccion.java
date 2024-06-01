@@ -13,10 +13,10 @@ import java.util.List;
 public class ListaDeReproduccion {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int idPlaylist;
+    private Long idPlaylist;
 
     private String nombre;
-    private int idUser;
+    private Long idUser;
     private Date fecha;
 
     @ManyToMany

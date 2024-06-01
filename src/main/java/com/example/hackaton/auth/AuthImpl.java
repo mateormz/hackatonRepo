@@ -13,17 +13,12 @@ public class AuthImpl {
     @Autowired
     private UserService userService ;
 
-    public boolean isOwnerResource(int id) {
+    public boolean isOwnerResource(Long  id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
         User user = userService.findByEmail(username);
-
-        // Comparar usando primitivos en lugar de equals
-        if (user != null && user.getId() == id) {
-            return true;
-        }
-        return false;
+        return user.getId().equals(id);
     }
 
     public String getCurrentEmail() {

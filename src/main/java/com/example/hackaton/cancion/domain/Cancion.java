@@ -18,7 +18,7 @@ public class Cancion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int idSong;
+    private Long idSong;
 
     private String titulo;
 

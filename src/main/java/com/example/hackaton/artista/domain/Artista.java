@@ -13,7 +13,7 @@ public class Artista {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int idArtist;
+    private Long idArtist;
 
     @NotBlank
     private String nombre;

@@ -37,21 +37,16 @@ public class UserService {
         };
     }
 
-    public void updateUser(int id, RequestUpdateUser requestUpdateUser) {
+    public void updateUser(Long id, RequestUpdateUser requestUpdateUser) {
         if (!authImpl.isOwnerResource(id))
             throw new UnauthorizeOperationException("Not allowed");
 
-        User user = userRepository.findById((long) id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         user.setName(requestUpdateUser.getName());
         userRepository.save(user);
     }
 
     public User getUserById(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            return optionalUser.get();
-        } else {
-            throw new RuntimeException("User not found");
-        }
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }
