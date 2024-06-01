@@ -41,7 +41,7 @@ public class UserService {
         if (!authImpl.isOwnerResource(id))
             throw new UnauthorizeOperationException("Not allowed");
 
-        User user = userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findById((long) id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         user.setName(requestUpdateUser.getName());
         userRepository.save(user);
     }
