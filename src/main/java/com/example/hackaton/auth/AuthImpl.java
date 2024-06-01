@@ -13,14 +13,17 @@ public class AuthImpl {
     @Autowired
     private UserService userService ;
 
-    /*
-    public boolean isOwnerResource(Long id) {
+    public boolean isOwnerResource(int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
-        String role = userDetails.getAuthorities().toArray()[0].toString();
-        User user = userService.findByEmail(username, role);
-        return user.getId().equals(id); //no puse lo de admin xq no tenemos admin
+        User user = userService.findByEmail(username);
+
+        // Comparar usando primitivos en lugar de equals
+        if (user != null && user.getId() == id) {
+            return true;
+        }
+        return false;
     }
 
     public String getCurrentEmail() {
@@ -28,6 +31,4 @@ public class AuthImpl {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return userDetails.getUsername();
     }
-
-     */
 }
