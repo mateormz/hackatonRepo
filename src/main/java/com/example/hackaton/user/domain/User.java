@@ -19,7 +19,7 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue//(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private int id;
 
     @Column(name = "name", nullable = false)
     private String name;

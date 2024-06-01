@@ -5,6 +5,7 @@ import com.example.hackaton.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class ListaDeReproduccion {
 
     private String nombre;
     private int idUser;
-    private Date fecha;
+    private LocalDateTime fecha;
 
     @ManyToMany
     private List<Cancion> cancionList;
