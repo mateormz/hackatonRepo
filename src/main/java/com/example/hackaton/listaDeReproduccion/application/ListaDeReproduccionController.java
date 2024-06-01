@@ -7,6 +7,7 @@ import com.example.hackaton.listaDeReproduccion.domain.ListaDeReproduccionDto;
 import com.example.hackaton.listaDeReproduccion.domain.ListaDeReproduccionService;
 import com.example.hackaton.listaDeReproduccion.infrastructure.ListaDeReproduccionRepository;
 import com.example.hackaton.user.infrastructure.UserRepository;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +15,13 @@ import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/ListaDeReproduccion")
 @RequiredArgsConstructor
 public class ListaDeReproduccionController {
 
     @Autowired
     private ListaDeReproduccionService listaDeReproduccionService;
+    @Autowired
+    private ListaDeReproduccionRepository listaDeReproduccionRepository;
 
     // Crear una nueva lista de reproducción
     @PostMapping("/users/{user_id}/playlists")
@@ -28,32 +30,43 @@ public class ListaDeReproduccionController {
         return ResponseEntity.ok(createdPlaylist);
     }
 
+    @GetMapping("/playlist/{listaReproduccionId}")
+    public ResponseEntity<ListaDeReproduccion> findPlaylist(@PathVariable Long listaReproduccionId){
+        ListaDeReproduccion listaDeReproduccion = listaDeReproduccionRepository.findById(listaReproduccionId).orElseThrow(() -> new RuntimeException("Playlist not found"));
+        return ResponseEntity.ok(listaDeReproduccion);
+    }
+
     // Actualizar una lista de reproducción
-    @PutMapping("/{id}")
-    public ResponseEntity<ListaDeReproduccion> updatePlaylist(@PathVariable int id, @RequestBody ListaDeReproduccionDto listaDeReproduccionDto) {
+    @PutMapping("/playlist/{listaReproduccionId}")
+    public ResponseEntity<ListaDeReproduccion> updatePlaylist(@PathVariable Long id, @RequestBody ListaDeReproduccionDto listaDeReproduccionDto) {
         listaDeReproduccionDto.setIdPlaylist(id);
         ListaDeReproduccion updatedPlaylist = listaDeReproduccionService.updateListaReproduccion(listaDeReproduccionDto);
         return ResponseEntity.ok(updatedPlaylist);
     }
 
     // Añadir una canción a la lista de reproducción
-    @PostMapping("/{playlistId}/songs/{songId}")
-    public ResponseEntity<Void> addSongToPlaylist(@PathVariable int playlistId, @PathVariable int songId) {
-        listaDeReproduccionService.añadirCancion(playlistId, songId);
+    @PostMapping("/playlists/{listaReproduccionId}/songs}")
+    public ResponseEntity<Void> addSongToPlaylist(@PathVariable Long listaReproduccionId, @RequestBody Long songId) {
+        listaDeReproduccionService.añadirCancion(listaReproduccionId, songId);
         return ResponseEntity.ok().build();
     }
 
     // Eliminar una canción de la lista de reproducción
-    @DeleteMapping("/{playlistId}/songs/{songId}")
-    public ResponseEntity<Void> removeSongFromPlaylist(@PathVariable int playlistId, @PathVariable int songId) {
-        listaDeReproduccionService.eliminarCancion(playlistId, songId);
+    @DeleteMapping("/playlists/{listaReproduccionId}/songs/{songId}")
+    public ResponseEntity<Void> removeSongFromPlaylist(@PathVariable Long listaReproduccionId, @PathVariable Long songId) {
+        listaDeReproduccionService.eliminarCancion(listaReproduccionId, songId);
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{playlist_id}/songs")
+    public List<CancionDto> getAllCancionesDeListaReproduccion(@PathVariable("playlist_id") Long listaReproduccionId) {
+        return listaDeReproduccionService.getAllCanciones(listaReproduccionId);
+    }
+
     // Eliminar una lista de reproducción
-    @DeleteMapping("/{ListaDeReproduccionId}")
-    public ResponseEntity<Void> deletePlaylist(@PathVariable int ListaDeReproduccionId) {
-        listaDeReproduccionService.eliminarListaDeReproducion(ListaDeReproduccionId);
+    @DeleteMapping("/playlist/{listaReproduccionId}")
+    public ResponseEntity<Void> deletePlaylist(@PathVariable Long listaReproduccionId) {
+        listaDeReproduccionService.eliminarListaDeReproducion(listaReproduccionId);
         return ResponseEntity.ok().build();
     }
 

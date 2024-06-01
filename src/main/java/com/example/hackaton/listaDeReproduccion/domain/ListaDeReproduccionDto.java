@@ -1,12 +1,17 @@
 package com.example.hackaton.listaDeReproduccion.domain;
 
+import com.example.hackaton.cancion.domain.Cancion;
+import com.example.hackaton.cancion.domain.CancionDto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class ListaDeReproduccionDto {
-    private int idPlaylist;
-    private String nombre;
+    Long idPlaylist;
+    String nombre;
+    Long idUser;
+    List<CancionDto> cancionList;
 
 }
